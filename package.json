@@ -1,0 +1,30 @@
+{
+  "name": "@venore/plugin-listas-materiais",
+  "version": "0.1.0",
+  "description": "Listas de materiais escolares por segmento: edição pela coordenação, aprovação pela direção e PDF final com capas (plugin do Venore Docks).",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./manifest": "./manifest.ts",
+    "./route-table": "./routes/route-table.ts",
+    "./contributions": "./contributions.ts",
+    "./migrations/*": "./migrations/*",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@sparticuz/chromium-min": "153.0.0",
+    "pdf-lib": "^1.17.1",
+    "puppeteer-core": "^25.16.0"
+  },
+  "peerDependencies": {
+    "drizzle-orm": ">=0.45",
+    "next": ">=16",
+    "react": ">=19",
+    "sonner": ">=2",
+    "zod": ">=4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
+  }
+}
