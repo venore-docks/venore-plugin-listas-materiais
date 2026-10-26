@@ -6,6 +6,7 @@ import { listSegments } from "../../index";
 import { LISTAS_PERMISSIONS } from "../../shared/permissions";
 import { EditionStatusBadge, formatDateTime, pdfDownloadHref } from "../../shared/ui/status-badge";
 import { CreateSegmentDialog } from "./create-segment-dialog";
+import { DeleteSegmentButton } from "./delete-segment-button";
 import { StartNextYearButton } from "./start-next-year-button";
 
 export default async function ListasMateriaisAdminPage() {
@@ -22,6 +23,7 @@ export default async function ListasMateriaisAdminPage() {
   const can = (permission: string) => gate.actor.isSuperadmin || gate.actor.permissions.includes(permission);
   const canStartYear = can(LISTAS_PERMISSIONS.edit) || can(LISTAS_PERMISSIONS.design);
   const canCreateSegment = can(LISTAS_PERMISSIONS.design);
+  const canDelete = can(LISTAS_PERMISSIONS.delete);
   const segments = result.data;
   const nextSchoolYear = new Date().getFullYear() + 1;
 
@@ -79,6 +81,9 @@ export default async function ListasMateriaisAdminPage() {
                     )}
                     {canStartYear && latest && (
                       <StartNextYearButton segmentId={segment.id} segmentName={segment.name} fromYear={latest.year} />
+                    )}
+                    {canDelete && (
+                      <DeleteSegmentButton segmentId={segment.id} segmentName={segment.name} years={segment.editions.map((edition) => edition.year)} />
                     )}
                   </div>
                   {older.length > 0 && (

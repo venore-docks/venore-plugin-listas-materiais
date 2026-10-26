@@ -31,6 +31,8 @@ Plugin não cria papel — crie três papéis personalizados e marque as permiss
 | Direção | `listas-materiais.read`, `listas-materiais.approve` |
 | Marketing | `listas-materiais.read`, `listas-materiais.edit`, `listas-materiais.design`, `listas-materiais.publish` |
 
+`listas-materiais.delete` (apagar a lista de um ano ou um segmento inteiro, com o nome digitado para confirmar) fica de fora dos três perfis por padrão — marque só em quem deve poder apagar.
+
 `design` = capas/páginas fixas e ordem do PDF (aba "Capas e ordem"). Capas de livro são `edit`.
 Arquivos enviados ficam na categoria de mídia restrita `listas-materiais.arquivos` (legível só por
 quem tem `listas-materiais.read`).

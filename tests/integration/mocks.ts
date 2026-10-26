@@ -18,11 +18,12 @@ export async function applyMigrations(dir: string) {
 }
 
 export type TestUser = { id: string; name: string | null; email: string };
-export const state: { current: TestUser | null; users: TestUser[]; permissions: Set<string>; uploads: { filename: string; categoryKey: string }[] } = {
+export const state: { current: TestUser | null; users: TestUser[]; permissions: Set<string>; uploads: { filename: string; categoryKey: string }[]; failUploads: boolean } = {
   current: null,
   users: [],
   permissions: new Set(),
   uploads: [],
+  failUploads: false,
 };
 
 export const getCurrentUser = async () => ({ success: true as const, data: state.current });
@@ -37,6 +38,7 @@ export const authorizeActor = async (permission: string | string[]) => {
 };
 
 export const uploadReservedCategoryAsset = async (input: { filename: string; categoryKey: string }) => {
+  if (state.failUploads) throw new Error("Vercel Blob: This store has been suspended.");
   state.uploads.push({ filename: input.filename, categoryKey: input.categoryKey });
   const id = `media-${state.uploads.length}`;
   return { success: true as const, data: { id, url: `/api/media/asset/${id}`, filename: input.filename } };

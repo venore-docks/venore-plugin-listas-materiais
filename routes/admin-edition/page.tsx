@@ -24,6 +24,7 @@ export default async function EditionEditorPage({ params }: { params: Promise<{ 
     design: can(LISTAS_PERMISSIONS.design),
     approve: can(LISTAS_PERMISSIONS.approve),
     publish: can(LISTAS_PERMISSIONS.publish),
+    delete: can(LISTAS_PERMISSIONS.delete),
   };
 
   // Miniaturas das capas de livro e nome dos PDFs das páginas fixas (o documento guarda só o id).

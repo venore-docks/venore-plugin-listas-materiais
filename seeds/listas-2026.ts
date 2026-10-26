@@ -1,8 +1,7 @@
 import type { OperationResult } from "@venore/plugin-sdk";
-import { uploadReservedCategoryAsset } from "@venore/plugin-sdk/media";
 import { insertSegmentWithEdition } from "../features/create-segment/store";
 import { selectSegmentsOverview } from "../features/list-segments/store";
-import { LISTAS_FILES_CATEGORY } from "../shared/permissions";
+import { uploadListasFile } from "../shared/upload";
 import { SEED_ASSETS } from "./assets";
 import { EDICOES_2026 } from "./data/edicoes-2026";
 import { toEditionContent } from "./to-edition-content";
@@ -31,15 +30,8 @@ export async function seedListas2026(): Promise<OperationResult<void>> {
     const asset = SEED_ASSETS[hash];
     if (!asset) continue;
     const data = Buffer.from(await asset.load(), "base64");
-    const uploaded = await uploadReservedCategoryAsset({
-      filename: asset.filename,
-      contentType: asset.contentType,
-      size: data.byteLength,
-      data,
-      categoryKey: LISTAS_FILES_CATEGORY.key,
-      categoryName: LISTAS_FILES_CATEGORY.name,
-    });
-    if (!uploaded.success) return uploaded;
+    const uploaded = await uploadListasFile({ filename: asset.filename, contentType: asset.contentType, data });
+    if (!uploaded.success) return { success: false, error: { ...uploaded.error, message: `${uploaded.error.message} Nenhuma lista foi criada.` } };
     mediaIdByHash.set(hash, uploaded.data.id);
   }
 

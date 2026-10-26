@@ -8,7 +8,7 @@ export const listasMateriaisManifest: PluginManifest = {
   manifestVersion: "1.0.0",
   key: "listas-materiais",
   name: "Listas de materiais",
-  version: "0.1.0",
+  version: "0.2.0",
   description:
     "Listas de materiais escolares por segmento e ano: a coordenação edita, a direção aprova e o marketing publica o PDF final com as capas.",
   compatibility: { coreVersion: ">=2.0.0 <3.0.0" },
@@ -19,6 +19,7 @@ export const listasMateriaisManifest: PluginManifest = {
     { key: "listas-materiais.design", label: "Editar capas, páginas fixas e a ordem do PDF" },
     { key: "listas-materiais.approve", label: "Aprovar ou devolver listas enviadas" },
     { key: "listas-materiais.publish", label: "Publicar o PDF final aprovado" },
+    { key: "listas-materiais.delete", label: "Apagar listas (um ano) e segmentos inteiros" },
   ],
   // Capas de livro, páginas fixas e PDFs publicados: legíveis pelos três perfis (read), inclusive
   // quando quem gera o PDF não é quem enviou o arquivo. Fora disso, nem media.manage abre.

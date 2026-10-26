@@ -9,6 +9,8 @@ import { applyMigrations, db, state } from "./mocks";
 import type { EditionContent, EditionRecord } from "../../contracts/types";
 import { listasEditionEvents, listasRevisions, listasSegments } from "../../database/schema";
 import { createSegmentHandler } from "../../features/create-segment/handler";
+import { deleteEditionHandler } from "../../features/delete-edition/handler";
+import { deleteSegmentHandler } from "../../features/delete-segment/handler";
 import { getEditionHandler } from "../../features/get-edition/handler";
 import { listSegmentsHandler } from "../../features/list-segments/handler";
 import { publishEditionHandler } from "../../features/publish-edition/handler";
@@ -164,6 +166,16 @@ describe("listas de materiais — fluxo (PGlite)", () => {
     expect(overview[0].editions.map((item) => item.year)).toEqual([2028, 2027, 2026]);
   });
 
+  it("seed com storage fora do ar: erro claro e nenhum segmento criado", async () => {
+    state.failUploads = true;
+    const { seedListas2026 } = await import("../../seeds/listas-2026");
+    const result = await seedListas2026();
+    state.failUploads = false;
+    expect(result).toMatchObject({ success: false, error: { code: "listas-materiais.storage_failed" } });
+    expect(!result.success && result.error.message).toContain("store has been suspended");
+    expect((await db.select().from(listasSegments)).map((segment) => segment.slug)).toEqual(["ensino-medio-3-ano"]);
+  });
+
   it("seed de 2026: cinco segmentos, cada arquivo sobe uma vez, rodar de novo não duplica", async () => {
     state.uploads = [];
     const { seedListas2026 } = await import("../../seeds/listas-2026");
@@ -179,5 +191,22 @@ describe("listas de materiais — fluxo (PGlite)", () => {
     ok(await seedListas2026());
     expect(await db.select().from(listasSegments)).toHaveLength(segments.length);
     expect(state.uploads).toHaveLength(Object.keys(SEED_ASSETS).length);
+  });
+
+  it("apagar: só com a permission; lista de um ano e segmento inteiro (com nome digitado)", async () => {
+    asMarketing();
+    expect(await deleteEditionHandler({ editionId: edition.id })).toMatchObject({ success: false });
+
+    as(marketing, [P.delete]);
+    const [, , oldest] = ok(await listSegmentsHandler()).find((segment) => segment.id === segmentId)!.editions;
+    expect(ok(await deleteEditionHandler({ editionId: oldest.id }))).toEqual({ segmentId, year: 2026 });
+    expect(ok(await listSegmentsHandler()).find((segment) => segment.id === segmentId)!.editions.map((item) => item.year)).toEqual([2028, 2027]);
+    expect(await db.select().from(listasRevisions).where(eq(listasRevisions.editionId, oldest.id))).toHaveLength(0);
+
+    expect(await deleteSegmentHandler({ segmentId, confirmName: "outro nome" })).toMatchObject({
+      error: { code: "listas-materiais.confirm_mismatch" },
+    });
+    expect(ok(await deleteSegmentHandler({ segmentId, confirmName: "Ensino Médio (3º ano)" }))).toEqual({ name: "Ensino Médio (3º ano)", editions: 2 });
+    expect(ok(await listSegmentsHandler()).some((segment) => segment.id === segmentId)).toBe(false);
   });
 });

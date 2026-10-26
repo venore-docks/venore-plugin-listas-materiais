@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { isPluginActive } from "@venore/plugin-sdk";
 import {
   createSegment,
+  deleteEdition,
+  deleteSegment,
   publishEdition,
   reviewEdition,
   saveEdition,
@@ -103,4 +105,20 @@ export async function uploadEditionFileAction(
   });
   if (!result.success) return { ok: false, error: result.error.message };
   return { ok: true, data: result.data };
+}
+
+export async function deleteEditionAction(editionId: string): Promise<ListasActionResult<{ year: number }>> {
+  if (await pluginDisabled()) return { ok: false, error: PLUGIN_DISABLED_ERROR };
+  const result = await deleteEdition({ editionId });
+  if (!result.success) return { ok: false, error: result.error.message };
+  revalidatePath(BASE_PATH);
+  return { ok: true, data: { year: result.data.year } };
+}
+
+export async function deleteSegmentAction(segmentId: string, confirmName: string): Promise<ListasActionResult<{ name: string }>> {
+  if (await pluginDisabled()) return { ok: false, error: PLUGIN_DISABLED_ERROR };
+  const result = await deleteSegment({ segmentId, confirmName });
+  if (!result.success) return { ok: false, error: result.error.message };
+  revalidatePath(BASE_PATH);
+  return { ok: true, data: { name: result.data.name } };
 }

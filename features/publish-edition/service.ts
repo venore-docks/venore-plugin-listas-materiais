@@ -1,8 +1,7 @@
 import { beginOperation, endOperation } from "@venore/plugin-sdk/observability";
-import { uploadReservedCategoryAsset } from "@venore/plugin-sdk/media";
 import { editionFileName, renderEditionPdf } from "../../shared/edition-pdf";
 import { findEditionById, findRevisionById, findSegmentById } from "../../shared/edition-store";
-import { LISTAS_FILES_CATEGORY } from "../../shared/permissions";
+import { uploadListasFile } from "../../shared/upload";
 import { failure } from "../../shared/results";
 import { markEditionPublished } from "./store";
 import type { PublishEditionCommand, PublishEditionResult } from "./types";
@@ -30,13 +29,10 @@ export async function publishEdition(command: PublishEditionCommand): Promise<Pu
   // O PDF publicado sai da revisão congelada na aprovação, nunca do rascunho vivo.
   const pdf = await renderEditionPdf(revision.content);
   const fileName = editionFileName(segment, edition.year);
-  const uploaded = await uploadReservedCategoryAsset({
+  const uploaded = await uploadListasFile({
     filename: fileName,
     contentType: "application/pdf",
-    size: pdf.bytes.byteLength,
     data: Buffer.from(pdf.bytes),
-    categoryKey: LISTAS_FILES_CATEGORY.key,
-    categoryName: LISTAS_FILES_CATEGORY.name,
     allowedMimeCategories: ["document"],
   });
   if (!uploaded.success) return finish(uploaded);

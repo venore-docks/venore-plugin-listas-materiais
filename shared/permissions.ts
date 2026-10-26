@@ -3,12 +3,14 @@
 // - Coordenação: read + edit
 // - Direção: read + approve
 // - Marketing: read + edit + design + publish
+// delete (apagar lista de um ano ou segmento inteiro) vai pra quem a escola decidir — fora dos três por padrão.
 export const LISTAS_PERMISSIONS = {
   read: "listas-materiais.read",
   edit: "listas-materiais.edit",
   design: "listas-materiais.design",
   approve: "listas-materiais.approve",
   publish: "listas-materiais.publish",
+  delete: "listas-materiais.delete",
 } as const;
 
 // Categoria reservada de mídia de todos os arquivos do plugin (capas de livro e páginas fixas).

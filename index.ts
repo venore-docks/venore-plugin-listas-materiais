@@ -11,6 +11,8 @@ export { startNextYearHandler as startNextYear } from "./features/start-next-yea
 export { createSegmentHandler as createSegment } from "./features/create-segment/handler";
 export { uploadEditionFileHandler as uploadEditionFile } from "./features/upload-edition-file/handler";
 export { exportEditionPdfHandler as exportEditionPdf } from "./features/export-edition-pdf/handler";
+export { deleteEditionHandler as deleteEdition } from "./features/delete-edition/handler";
+export { deleteSegmentHandler as deleteSegment } from "./features/delete-segment/handler";
 
 export type {
   AssemblyItem,
@@ -36,4 +38,6 @@ export type { PublishEditionInput, PublishEditionResult } from "./features/publi
 export type { StartNextYearInput, StartNextYearResult } from "./features/start-next-year/types";
 export type { CreateSegmentInput, CreateSegmentResult } from "./features/create-segment/types";
 export type { UploadEditionFileInput, UploadEditionFileResult, EditionFileKind } from "./features/upload-edition-file/types";
+export type { DeleteEditionInput, DeleteEditionResult } from "./features/delete-edition/types";
+export type { DeleteSegmentInput, DeleteSegmentResult } from "./features/delete-segment/types";
 export type { ExportEditionPdfInput, ExportEditionPdfResult, PdfSource } from "./features/export-edition-pdf/types";

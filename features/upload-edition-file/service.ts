@@ -1,6 +1,5 @@
 import { beginOperation, endOperation } from "@venore/plugin-sdk/observability";
-import { uploadReservedCategoryAsset } from "@venore/plugin-sdk/media";
-import { LISTAS_FILES_CATEGORY } from "../../shared/permissions";
+import { uploadListasFile } from "../../shared/upload";
 import type { UploadEditionFileInput, UploadEditionFileResult } from "./types";
 
 // Sobe pra categoria reservada do plugin (não a biblioteca geral, que exige media.manage): o arquivo
@@ -13,13 +12,10 @@ export async function uploadEditionFile(command: UploadEditionFileInput & { acto
     kind: "write",
   });
 
-  const uploaded = await uploadReservedCategoryAsset({
+  const uploaded = await uploadListasFile({
     filename: command.filename,
     contentType: command.contentType,
-    size: command.size,
     data: command.data,
-    categoryKey: LISTAS_FILES_CATEGORY.key,
-    categoryName: LISTAS_FILES_CATEGORY.name,
     allowedMimeCategories: [command.kind === "pdf" ? "document" : "image"],
   });
 

@@ -12,12 +12,13 @@ import { EditionStatusBadge, formatDateTime, pdfDownloadHref } from "../../share
 import { saveEditionAction } from "../admin/actions";
 import { AssemblyTab } from "./assembly-tab";
 import { BooksTab } from "./books-tab";
+import { DeleteEditionButton } from "./delete-edition-button";
 import { HistoryTab } from "./history-tab";
 import { InfoTab } from "./info-tab";
 import { ListsTab } from "./lists-tab";
 import { WorkflowActions } from "./workflow-actions";
 
-export type EditorPermissions = { edit: boolean; design: boolean; approve: boolean; publish: boolean };
+export type EditorPermissions = { edit: boolean; design: boolean; approve: boolean; publish: boolean; delete: boolean };
 export type MediaRef = { url: string; filename: string };
 
 export function EditionEditor({
@@ -147,6 +148,7 @@ export function EditionEditor({
               </a>
             </Button>
           )}
+          {permissions.delete && <DeleteEditionButton editionId={edition.id} title={title} isOnlyYear={view.siblingYears.length === 1} />}
         </div>
       </div>
 
