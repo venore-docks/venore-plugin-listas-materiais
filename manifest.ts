@@ -8,7 +8,7 @@ export const listasMateriaisManifest: PluginManifest = {
   manifestVersion: "1.0.0",
   key: "listas-materiais",
   name: "Listas de materiais",
-  version: "0.2.0",
+  version: "0.3.0",
   description:
     "Listas de materiais escolares por segmento e ano: a coordenação edita, a direção aprova e o marketing publica o PDF final com as capas.",
   compatibility: { coreVersion: ">=2.0.0 <3.0.0" },
