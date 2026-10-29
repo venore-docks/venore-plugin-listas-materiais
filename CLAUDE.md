@@ -19,6 +19,10 @@ As regras são as do core — não copie para cá, leia lá quando a tarefa toca
   `canonicalJson` (`shared/content-schema.ts`), nunca `JSON.stringify` puro.
 - Render (`shared/render/render-sections.ts`) é porta 1:1 do notebook antigo; a ordem dos elementos importa
   (zebra por `nth-child`). Depois de mexer, rode `scripts/render-seed-pdfs.mts` e compare com os PDFs de 2026.
+- Capa (`shared/render/render-cover.ts`): réplica da arte de 2026 com coordenadas em pt medidas no PDF do
+  marketing. `cover-art.generated.ts` (logo do colégio + faixa ondulada) e `fonts-cover.generated.ts` são
+  extraídos/gerados — ao reextrair o SVG do logo, tirar só os `<path fill=…>` do fundo da página: o mesmo
+  retângulo aparece nos `<clipPath>`, e sem ele o Chromium recorta o logo inteiro (o PyMuPDF não).
 - O id de mídia no documento é editável pelo cliente: `shared/media.ts` só lê arquivo com
   `accessPermission === listas-materiais.read` (categoria do plugin).
 

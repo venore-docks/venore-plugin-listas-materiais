@@ -1,6 +1,6 @@
 {
   "name": "@venore/plugin-listas-materiais",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Listas de materiais escolares por segmento: edição pela coordenação, aprovação pela direção e PDF final com capas (plugin do Venore Docks).",
   "private": true,
   "type": "module",

@@ -18,10 +18,13 @@ export function toEditionContent(seed: SeedSegment, resolveAsset: (hash: string)
       ...book,
       imageMediaId: image ? resolveAsset(image) : null,
     })),
-    assembly: seed.content.assembly.map((item) =>
-      item.kind === "static"
-        ? { id: id(), kind: "static", label: item.label, mediaId: resolveAsset(item.asset) }
-        : { id: id(), kind: "section", section: item.section, title: item.title },
-    ),
+    assembly: seed.content.assembly.map((item) => {
+      if (item.kind === "static") return { id: id(), kind: "static", label: item.label, mediaId: resolveAsset(item.asset) };
+      if (item.kind === "cover") {
+        const { logo, ...cover } = item;
+        return { id: id(), ...cover, logoMediaId: logo ? resolveAsset(logo) : null };
+      }
+      return { id: id(), kind: "section", section: item.section, title: item.title };
+    }),
   };
 }

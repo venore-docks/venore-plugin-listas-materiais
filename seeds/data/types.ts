@@ -6,7 +6,15 @@ type WithoutId<T> = Omit<T, "id">;
 
 export type SeedAssembly =
   | { kind: "static"; label: string; asset: string }
-  | { kind: "section"; section: SectionKind; title: string };
+  | { kind: "section"; section: SectionKind; title: string }
+  | { kind: "cover"; subtitle: string; topColor: string; bandColor: string; logo: string | null };
+
+// Arquivos de seeds/assets que o item de montagem usa (página fixa ou logo extra da capa).
+export function assemblyAssets(item: SeedAssembly): string[] {
+  if (item.kind === "static") return [item.asset];
+  if (item.kind === "cover" && item.logo) return [item.logo];
+  return [];
+}
 
 export type SeedSegment = {
   slug: string;

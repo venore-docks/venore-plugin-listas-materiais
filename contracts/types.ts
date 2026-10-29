@@ -51,12 +51,13 @@ export type SectionKind = "info" | "list" | "book";
 // marketing — folha de rosto, horário, parceiros) intercaladas com as seções geradas e as capas.
 // `title` da seção é o título impresso no topo (info/book); lista não imprime título.
 //
-// `cover`: imagem de fundo (enviada uma vez) + ano da edição escrito por cima no render — assim a
-// virada de ano não exige subir PDF novo (capa e quarta capa usam o mesmo tipo).
+// `cover`: a capa de 2026 refeita em HTML (shared/render/render-cover.ts) — o ano vem da edição e o
+// resto é dado: subtítulo, cor do fundo, cor da faixa de baixo e um logo extra opcional ao lado do
+// logo do colégio (Kinder, Hunters). Virar o ano não exige arquivo novo.
 export type AssemblyItem =
   | { id: string; kind: "static"; label: string; mediaId: string | null }
   | { id: string; kind: "section"; section: SectionKind; title: string }
-  | { id: string; kind: "cover"; label: string; backgroundMediaId: string | null };
+  | { id: string; kind: "cover"; subtitle: string; topColor: string; bandColor: string; logoMediaId: string | null };
 
 export type EditionContent = {
   info: InfoBlock[];

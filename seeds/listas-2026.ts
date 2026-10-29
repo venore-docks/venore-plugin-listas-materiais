@@ -4,6 +4,7 @@ import { selectSegmentsOverview } from "../features/list-segments/store";
 import { uploadListasFile } from "../shared/upload";
 import { SEED_ASSETS } from "./assets";
 import { EDICOES_2026 } from "./data/edicoes-2026";
+import { assemblyAssets } from "./data/types";
 import { toEditionContent } from "./to-edition-content";
 
 // Listas de 2026 como estavam no Drive — o ponto de partida da coordenação (ninguém cria lista do
@@ -23,7 +24,7 @@ export async function seedListas2026(): Promise<OperationResult<void>> {
   const neededHashes = new Set(
     pending.flatMap((seed) => [
       ...seed.content.books.map((book) => book.image).filter((hash): hash is string => Boolean(hash)),
-      ...seed.content.assembly.flatMap((item) => (item.kind === "static" ? [item.asset] : [])),
+      ...seed.content.assembly.flatMap(assemblyAssets),
     ]),
   );
   for (const hash of neededHashes) {

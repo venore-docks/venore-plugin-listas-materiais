@@ -5,9 +5,10 @@ Drive ("Listas de Materiais") e o notebook do Colab que gerava os PDFs.
 
 - Uma lista por **segmento** (Educação Infantil, Fundamental I, Fundamental II, Médio, Médio Hunters…)
   e **ano letivo**. Ninguém começa do zero: "Iniciar 2027" copia a lista de 2026 inteira.
-- O PDF final é o **mesmo modelo de 2026**: mesmo CSS, mesma fonte, mesmas faixas laterais. Páginas
-  fixas (folha de rosto, horário, parceiros) são PDFs prontos; capa e quarta capa são uma imagem de
-  fundo enviada uma vez + o ano da edição escrito por cima no render — vira ano sem subir PDF novo.
+- O PDF final é o **mesmo modelo de 2026**: mesmo CSS, mesma fonte, mesmas faixas laterais. A
+  **capa** é gerada em HTML (réplica da arte de 2026) com o ano da lista, subtítulo, cores e um logo
+  extra opcional (Kinder, Hunters) — virar o ano não exige arquivo novo. As demais páginas fixas
+  (folha de rosto, horário, parceiros, quarta capa) continuam PDFs prontos.
 
 ## Fluxo
 

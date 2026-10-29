@@ -170,7 +170,14 @@ export function EditionEditor({
           <InfoTab blocks={content.info} disabled={!permissions.edit} onChange={setPart("info")} />
         </TabsContent>
         <TabsContent value="montagem" className="pt-4">
-          <AssemblyTab items={content.assembly} media={media} disabled={!permissions.design} onChange={setPart("assembly")} onMediaAdded={addMedia} />
+          <AssemblyTab
+            items={content.assembly}
+            media={media}
+            disabled={!permissions.design}
+            defaultSubtitle={segment.name}
+            onChange={setPart("assembly")}
+            onMediaAdded={addMedia}
+          />
         </TabsContent>
         <TabsContent value="historico" className="pt-4">
           <HistoryTab events={view.events} />

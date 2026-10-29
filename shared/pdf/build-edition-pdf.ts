@@ -79,23 +79,23 @@ export async function buildEditionPdf(content: EditionContent, year: number, loa
       }
 
       if (item.kind === "cover") {
-        const media = item.backgroundMediaId ? await loadMedia(item.backgroundMediaId) : null;
-        if (!media || !media.contentType.startsWith("image/")) {
-          skipped.push(item.label);
-          continue;
-        }
-        const backgroundImage = `data:${media.contentType};base64,${Buffer.from(media.bytes).toString("base64")}`;
-        await page.setContent(renderCoverDocument({ year, backgroundImage }), { waitUntil: "load" });
+        // Logo extra ilegível não derruba a capa: ela sai só com o logo do colégio.
+        const media = item.logoMediaId ? await loadMedia(item.logoMediaId) : null;
+        const logo = media?.contentType.startsWith("image/")
+          ? `data:${media.contentType};base64,${Buffer.from(media.bytes).toString("base64")}`
+          : null;
+        if (item.logoMediaId && !logo) skipped.push("Logo extra da capa");
+        await page.setContent(
+          renderCoverDocument({ year, subtitle: item.subtitle, topColor: item.topColor, bandColor: item.bandColor, logo }),
+          { waitUntil: "load" },
+        );
         await page.evaluate(() => document.fonts.ready.then(() => undefined));
-        const coverBytes = await page.pdf({
-          width: "8.27in",
-          height: "11.69in",
-          margin: { top: 0, right: 0, bottom: 0, left: 0 },
-          printBackground: true,
-        });
+        // A capa é medida em pt do A4 exato (@page size: A4); 8.27×11.69in é 0,2pt mais baixo e
+        // jogaria a borda inferior pra uma segunda página.
+        const coverBytes = await page.pdf({ preferCSSPageSize: true, printBackground: true });
         const cover = await PDFDocument.load(coverBytes);
-        const pages = await output.copyPages(cover, cover.getPageIndices());
-        for (const copied of pages) output.addPage(copied);
+        const [coverPage] = await output.copyPages(cover, [0]);
+        output.addPage(coverPage);
         continue;
       }
 

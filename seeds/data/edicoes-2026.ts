@@ -1143,9 +1143,11 @@ export const EDICOES_2026: SeedSegment[] = [
       ],
       "assembly": [
         {
-          "kind": "static",
-          "label": "Capa",
-          "asset": "703cdc0919f3ba27"
+          "kind": "cover",
+          "subtitle": "Educação Infantil",
+          "topColor": "#2b4372",
+          "bandColor": "#006b82",
+          "logo": "d28758c7ae91e884"
         },
         {
           "kind": "static",
@@ -2585,9 +2587,11 @@ export const EDICOES_2026: SeedSegment[] = [
       ],
       "assembly": [
         {
-          "kind": "static",
-          "label": "Capa",
-          "asset": "584842841c1704b4"
+          "kind": "cover",
+          "subtitle": "Ensino Fundamental I",
+          "topColor": "#006b82",
+          "bandColor": "#02748d",
+          "logo": null
         },
         {
           "kind": "static",
@@ -3493,9 +3497,11 @@ export const EDICOES_2026: SeedSegment[] = [
       ],
       "assembly": [
         {
-          "kind": "static",
-          "label": "Capa",
-          "asset": "d1f8d456ebd93beb"
+          "kind": "cover",
+          "subtitle": "Ensino Fundamental II",
+          "topColor": "#006b82",
+          "bandColor": "#0a96a6",
+          "logo": null
         },
         {
           "kind": "static",
@@ -3851,9 +3857,11 @@ export const EDICOES_2026: SeedSegment[] = [
       ],
       "assembly": [
         {
-          "kind": "static",
-          "label": "Capa",
-          "asset": "da55b56297ef777f"
+          "kind": "cover",
+          "subtitle": "Ensino Médio (1ºEM e 2º EM)",
+          "topColor": "#2f2f30",
+          "bandColor": "#006b82",
+          "logo": null
         },
         {
           "kind": "static",
@@ -4037,9 +4045,11 @@ export const EDICOES_2026: SeedSegment[] = [
       ],
       "assembly": [
         {
-          "kind": "static",
-          "label": "Capa",
-          "asset": "0eed2ba87e77e74f"
+          "kind": "cover",
+          "subtitle": "Hunters (3º EM)",
+          "topColor": "#2f2f30",
+          "bandColor": "#1f8399",
+          "logo": "733ace0db014ccfa"
         },
         {
           "kind": "static",

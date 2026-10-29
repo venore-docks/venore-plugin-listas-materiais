@@ -3,6 +3,7 @@ import { editionContentSchema } from "../../shared/content-schema";
 import { SEED_ASSETS } from "../assets";
 import { toEditionContent } from "../to-edition-content";
 import { EDICOES_2026 } from "./edicoes-2026";
+import { assemblyAssets } from "./types";
 
 describe("seed das listas de 2026", () => {
   it("cinco segmentos, slugs únicos", () => {
@@ -19,7 +20,7 @@ describe("seed das listas de 2026", () => {
     for (const seed of EDICOES_2026) {
       const hashes = [
         ...seed.content.books.flatMap((book) => (book.image ? [book.image] : [])),
-        ...seed.content.assembly.flatMap((item) => (item.kind === "static" ? [item.asset] : [])),
+        ...seed.content.assembly.flatMap(assemblyAssets),
       ];
       for (const hash of hashes) expect(SEED_ASSETS[hash], `${seed.slug}: ${hash}`).toBeDefined();
     }

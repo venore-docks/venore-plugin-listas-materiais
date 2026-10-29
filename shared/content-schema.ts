@@ -6,6 +6,8 @@ import type { EditionContent } from "../contracts/types";
 const id = z.string().min(1).max(64);
 const shortText = z.string().max(500);
 const longText = z.string().max(10_000);
+// Vai direto pro CSS da capa — só #rrggbb, nada que feche a declaração.
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 
 const infoBlock = z.object({ id, title: shortText, body: longText, note: longText });
 const listRow = z.object({ id, category: shortText, quantity: z.string().max(40), description: longText, note: longText });
@@ -26,7 +28,7 @@ const bookRow = z.object({
 const assemblyItem = z.discriminatedUnion("kind", [
   z.object({ id, kind: z.literal("static"), label: shortText, mediaId: id.nullable() }),
   z.object({ id, kind: z.literal("section"), section: z.enum(["info", "list", "book"]), title: shortText }),
-  z.object({ id, kind: z.literal("cover"), label: shortText, backgroundMediaId: id.nullable() }),
+  z.object({ id, kind: z.literal("cover"), subtitle: shortText, topColor: hexColor, bandColor: hexColor, logoMediaId: id.nullable() }),
 ]);
 
 export const editionContentSchema = z.object({
