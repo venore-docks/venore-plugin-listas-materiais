@@ -1,5 +1,6 @@
 import { PDFDocument, rgb } from "pdf-lib";
 import type { EditionContent, SectionKind } from "../../contracts/types";
+import { renderCoverDocument } from "../render/render-cover";
 import { isSectionEmpty, renderSectionDocument } from "../render/render-sections";
 import { launchPdfBrowser } from "./browser";
 
@@ -43,7 +44,7 @@ async function loadBookImages(content: EditionContent, loadMedia: MediaLoader): 
   return new Map(entries.filter((entry): entry is [string, string] => entry !== null));
 }
 
-export async function buildEditionPdf(content: EditionContent, loadMedia: MediaLoader): Promise<BuildEditionPdfResult> {
+export async function buildEditionPdf(content: EditionContent, year: number, loadMedia: MediaLoader): Promise<BuildEditionPdfResult> {
   const images = await loadBookImages(content, loadMedia);
   const output = await PDFDocument.create();
   const skipped: string[] = [];
@@ -74,6 +75,27 @@ export async function buildEditionPdf(content: EditionContent, loadMedia: MediaL
         } catch {
           skipped.push(item.label);
         }
+        continue;
+      }
+
+      if (item.kind === "cover") {
+        const media = item.backgroundMediaId ? await loadMedia(item.backgroundMediaId) : null;
+        if (!media || !media.contentType.startsWith("image/")) {
+          skipped.push(item.label);
+          continue;
+        }
+        const backgroundImage = `data:${media.contentType};base64,${Buffer.from(media.bytes).toString("base64")}`;
+        await page.setContent(renderCoverDocument({ year, backgroundImage }), { waitUntil: "load" });
+        await page.evaluate(() => document.fonts.ready.then(() => undefined));
+        const coverBytes = await page.pdf({
+          width: "8.27in",
+          height: "11.69in",
+          margin: { top: 0, right: 0, bottom: 0, left: 0 },
+          printBackground: true,
+        });
+        const cover = await PDFDocument.load(coverBytes);
+        const pages = await output.copyPages(cover, cover.getPageIndices());
+        for (const copied of pages) output.addPage(copied);
         continue;
       }
 

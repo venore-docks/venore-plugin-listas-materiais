@@ -20,7 +20,7 @@ for (const seed of EDICOES_2026) {
     for (const g of content.groups) if (g.name === "Para todas as Matérias") g.name = "Para todas as Matéroas";
   }
   const started = Date.now();
-  const result = await buildEditionPdf(content, async (id) => {
+  const result = await buildEditionPdf(content, seed.year, async (id) => {
     const asset = SEED_ASSETS[id];
     if (!asset) return null;
     return { bytes: Buffer.from(await asset.load(), "base64"), contentType: asset.contentType };

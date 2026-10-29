@@ -48,11 +48,15 @@ export type BookRow = {
 export type SectionKind = "info" | "list" | "book";
 
 // Ordem de montagem do PDF final (era pacote_final.ordem_montagem): páginas fixas (PDF enviado pelo
-// marketing — capa, folha de rosto, horário, parceiros, quarta capa) intercaladas com as seções
-// geradas. `title` da seção é o título impresso no topo (info/book); lista não imprime título.
+// marketing — folha de rosto, horário, parceiros) intercaladas com as seções geradas e as capas.
+// `title` da seção é o título impresso no topo (info/book); lista não imprime título.
+//
+// `cover`: imagem de fundo (enviada uma vez) + ano da edição escrito por cima no render — assim a
+// virada de ano não exige subir PDF novo (capa e quarta capa usam o mesmo tipo).
 export type AssemblyItem =
   | { id: string; kind: "static"; label: string; mediaId: string | null }
-  | { id: string; kind: "section"; section: SectionKind; title: string };
+  | { id: string; kind: "section"; section: SectionKind; title: string }
+  | { id: string; kind: "cover"; label: string; backgroundMediaId: string | null };
 
 export type EditionContent = {
   info: InfoBlock[];

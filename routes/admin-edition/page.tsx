@@ -27,9 +27,11 @@ export default async function EditionEditorPage({ params }: { params: Promise<{ 
     delete: can(LISTAS_PERMISSIONS.delete),
   };
 
-  // Miniaturas das capas de livro e nome dos PDFs das páginas fixas (o documento guarda só o id).
+  // Miniaturas das capas de livro e nome dos arquivos das páginas fixas e capas (o documento guarda só o id).
   const imageIds = view.edition.content.books.map((book) => book.imageMediaId).filter((id): id is string => Boolean(id));
-  const staticIds = view.edition.content.assembly.flatMap((item) => (item.kind === "static" && item.mediaId ? [item.mediaId] : []));
+  const staticIds = view.edition.content.assembly.flatMap((item) =>
+    item.kind === "static" ? (item.mediaId ? [item.mediaId] : []) : item.kind === "cover" ? (item.backgroundMediaId ? [item.backgroundMediaId] : []) : [],
+  );
   const [imageUrls, staticAssets] = await Promise.all([
     imageIds.length > 0 ? getMediaAssetUrls({ ids: imageIds, displayWidth: 160 }) : null,
     Promise.all(staticIds.map((id) => getMediaAsset({ id }))),

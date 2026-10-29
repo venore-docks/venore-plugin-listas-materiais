@@ -27,7 +27,7 @@ export async function publishEdition(command: PublishEditionCommand): Promise<Pu
   if (!revision) return finish(failure("revision_missing", "A versão aprovada não foi encontrada."));
 
   // O PDF publicado sai da revisão congelada na aprovação, nunca do rascunho vivo.
-  const pdf = await renderEditionPdf(revision.content);
+  const pdf = await renderEditionPdf(revision.content, edition.year);
   const fileName = editionFileName(segment, edition.year);
   const uploaded = await uploadListasFile({
     filename: fileName,

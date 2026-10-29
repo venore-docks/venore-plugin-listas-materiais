@@ -8,6 +8,6 @@ export function editionFileName(segment: SegmentRecord, year: number, prefix = "
   return `${prefix}${name.toLowerCase().endsWith(".pdf") ? name : `${name}.pdf`}`;
 }
 
-export async function renderEditionPdf(content: EditionContent): Promise<BuildEditionPdfResult> {
-  return buildEditionPdf(content, await createListasMediaLoader());
+export async function renderEditionPdf(content: EditionContent, year: number): Promise<BuildEditionPdfResult> {
+  return buildEditionPdf(content, year, await createListasMediaLoader());
 }

@@ -34,13 +34,13 @@ export async function exportEditionPdf(command: ExportEditionPdfInput & { actorI
   if (command.source === "approved") {
     const revision = edition.approvedRevisionId ? await findRevisionById(edition.approvedRevisionId) : null;
     if (!revision) return finish(failure("not_approved", "Esta lista ainda não tem versão aprovada."));
-    const pdf = await renderEditionPdf(revision.content);
+    const pdf = await renderEditionPdf(revision.content, edition.year);
     return finish({
       success: true,
       data: { fileName: editionFileName(segment, edition.year, `Aprovada v${revision.number} - `), ...pdf },
     });
   }
 
-  const pdf = await renderEditionPdf(edition.content);
+  const pdf = await renderEditionPdf(edition.content, edition.year);
   return finish({ success: true, data: { fileName: editionFileName(segment, edition.year, "Prévia - "), ...pdf } });
 }

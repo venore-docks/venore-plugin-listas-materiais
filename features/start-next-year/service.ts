@@ -4,7 +4,8 @@ import { findLatestEdition, insertEdition } from "./store";
 import type { StartNextYearCommand, StartNextYearResult } from "./types";
 
 // Ano novo nunca começa do zero: copia a lista do último ano (itens, livros, capas e ordem) como
-// rascunho. As capas do ano anterior trazem o ano antigo impresso — o marketing troca na aba Montagem.
+// rascunho. Capas do tipo `cover` já saem com o ano novo (é a edição que diz o ano, não o arquivo);
+// páginas fixas (`static`) com o ano impresso na arte continuam exigindo troca de PDF pelo marketing.
 export async function startNextYear(command: StartNextYearCommand): Promise<StartNextYearResult> {
   const handle = beginOperation({
     useCase: "listas-materiais.start-next-year",

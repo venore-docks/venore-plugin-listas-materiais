@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Plus } from "lucide-react";
+import { FileText, Image as ImageIcon, Plus } from "lucide-react";
 import { Badge, Button, Input } from "@venore/plugin-sdk/ui";
 import type { AssemblyItem, SectionKind } from "../../contracts/types";
 import { moveItem, newId, removeItem, replaceItem } from "./array-ops";
@@ -14,7 +14,7 @@ const SECTION_LABELS: Record<SectionKind, string> = {
 };
 
 // Ordem das páginas do PDF final (era pacote_final.ordem_montagem): PDFs prontos do marketing
-// (capa, folha de rosto, horário, parceiros, quarta capa) intercalados com as seções geradas.
+// (folha de rosto, horário, parceiros) e capas (imagem + ano) intercalados com as seções geradas.
 export function AssemblyTab({
   items,
   media,
@@ -33,7 +33,8 @@ export function AssemblyTab({
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Páginas na ordem em que saem no PDF. As páginas fixas são PDFs prontos (A4) — para trocar a capa do ano, envie o PDF novo.
+        Páginas na ordem em que saem no PDF. Páginas fixas são PDFs prontos (A4). Capas usam uma imagem de fundo + o ano da
+        edição escrito por cima automaticamente — só é preciso enviar imagem nova se a arte mudar.
       </p>
       {items.map((item, index) => (
         <div key={item.id} className="flex flex-wrap items-end gap-3 rounded-md border border-border p-3">
@@ -63,6 +64,36 @@ export function AssemblyTab({
                 }}
               />
             </>
+          ) : item.kind === "cover" ? (
+            <>
+              <Field label="Capa (imagem + ano)" className="w-56">
+                <Input value={item.label} disabled={disabled} onChange={(event) => update(index, { label: event.target.value })} />
+              </Field>
+              <div className="flex min-w-[200px] flex-1 items-center gap-2 pb-1 text-sm">
+                {item.backgroundMediaId && media[item.backgroundMediaId] ? (
+                  <a
+                    className="flex items-center gap-1 truncate underline-offset-2 hover:underline"
+                    href={media[item.backgroundMediaId].url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ImageIcon className="size-4 shrink-0" />
+                    <span className="truncate">{media[item.backgroundMediaId].filename || "Imagem"}</span>
+                  </a>
+                ) : (
+                  <span className="text-destructive">Sem imagem — esta página fica fora do PDF.</span>
+                )}
+              </div>
+              <UploadButton
+                kind="image"
+                label={item.backgroundMediaId ? "Trocar imagem" : "Enviar imagem"}
+                disabled={disabled}
+                onUploaded={(file) => {
+                  onMediaAdded(file.id, { url: file.url, filename: file.filename });
+                  update(index, { backgroundMediaId: file.id });
+                }}
+              />
+            </>
           ) : (
             <>
               <Field label={item.section === "list" ? "Título (não impresso nesta seção)" : "Título impresso no topo"} className="w-56">
@@ -88,6 +119,15 @@ export function AssemblyTab({
           <Button type="button" size="sm" variant="outline" onClick={() => onChange([...items, { id: newId(), kind: "static", label: "Nova página", mediaId: null }])}>
             <Plus className="size-3.5" />
             Página fixa (PDF)
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => onChange([...items, { id: newId(), kind: "cover", label: "Capa", backgroundMediaId: null }])}
+          >
+            <Plus className="size-3.5" />
+            Capa (imagem + ano)
           </Button>
           {(["info", "list", "book"] as const)
             .filter((section) => !items.some((item) => item.kind === "section" && item.section === section))

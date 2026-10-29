@@ -26,6 +26,7 @@ const bookRow = z.object({
 const assemblyItem = z.discriminatedUnion("kind", [
   z.object({ id, kind: z.literal("static"), label: shortText, mediaId: id.nullable() }),
   z.object({ id, kind: z.literal("section"), section: z.enum(["info", "list", "book"]), title: shortText }),
+  z.object({ id, kind: z.literal("cover"), label: shortText, backgroundMediaId: id.nullable() }),
 ]);
 
 export const editionContentSchema = z.object({
