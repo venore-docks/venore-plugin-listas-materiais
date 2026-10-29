@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useTransition, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useTransition, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, Bold, Loader2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button, Textarea, cn } from "@venore/plugin-sdk/ui";
@@ -89,6 +89,43 @@ export function RichTextarea({
         </Button>
       )}
     </div>
+  );
+}
+
+// Textarea de uma linha que cresce com o conteúdo — para campos curtos por padrão (descrição/observação
+// de item de lista) que às vezes recebem um texto bem mais longo do que cabe numa linha fixa.
+export function AutoGrowTextarea({
+  value,
+  onChange,
+  disabled,
+  placeholder,
+  className,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  placeholder?: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`;
+  }, [value]);
+
+  return (
+    <Textarea
+      ref={ref}
+      value={value}
+      disabled={disabled}
+      placeholder={placeholder}
+      rows={1}
+      className={cn("min-h-8 resize-none overflow-hidden py-1.5 leading-5", className)}
+      onChange={(event) => onChange(event.target.value)}
+    />
   );
 }
 

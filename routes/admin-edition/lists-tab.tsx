@@ -5,10 +5,11 @@ import { Plus, StickyNote } from "lucide-react";
 import { Button, Input, cn } from "@venore/plugin-sdk/ui";
 import type { ListGroup, ListRow } from "../../contracts/types";
 import { insertItem, moveItem, newId, removeItem, replaceItem } from "./array-ops";
-import { Field, RowActions } from "./editor-fields";
+import { AutoGrowTextarea, Field, RowActions } from "./editor-fields";
 
 // Uma linha por item (Categoria | Qtd. | Descrição | Observação | ações) — turma com 30 itens cabe na tela.
-const ROW_GRID = "grid grid-cols-[130px_52px_minmax(280px,2.2fr)_minmax(140px,1fr)_auto] items-center gap-1.5";
+// items-start porque Descrição/Observação crescem verticalmente (AutoGrowTextarea) quando o texto é longo.
+const ROW_GRID = "grid grid-cols-[130px_52px_minmax(280px,2.2fr)_minmax(140px,1fr)_auto] items-start gap-1.5";
 
 // Aba "Séries" da planilha antiga, organizada por turma (cada turma vira a faixa verde no PDF, na
 // ordem desta coluna). Linha sem descrição e com observação = aviso em destaque (card).
@@ -117,14 +118,13 @@ export function ListsTab({ groups, disabled, onChange }: { groups: ListGroup[]; 
                         onChange={(event) => patch({ category: event.target.value })}
                       />
                       <Input className="h-8 text-center" value={row.quantity} disabled={disabled} onChange={(event) => patch({ quantity: event.target.value })} />
-                      <Input
-                        className="h-8"
+                      <AutoGrowTextarea
                         value={row.description}
                         disabled={disabled}
                         placeholder={isNotice ? "(vazio: a linha sai como aviso em destaque)" : undefined}
-                        onChange={(event) => patch({ description: event.target.value })}
+                        onChange={(description) => patch({ description })}
                       />
-                      <Input className="h-8" value={row.note} disabled={disabled} onChange={(event) => patch({ note: event.target.value })} />
+                      <AutoGrowTextarea value={row.note} disabled={disabled} onChange={(note) => patch({ note })} />
                       <div className="flex items-center">
                         {!disabled && (
                           <Button
