@@ -124,6 +124,7 @@ export function EditionEditor({
         </div>
 
         <StatusNotice view={view} status={meta.status} />
+        <MissingFilesNotice content={content} />
 
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" asChild title={dirty ? "A prévia mostra a última versão salva." : undefined}>
@@ -183,6 +184,19 @@ export function EditionEditor({
           <HistoryTab events={view.events} />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+// A prévia vale como documento final: página fixa sem arquivo some do PDF em silêncio, então o aviso
+// aparece aqui, antes de baixar. (Mesma regra do build: static sem mediaId é pulada.)
+function MissingFilesNotice({ content }: { content: EditionContent }) {
+  const missing = content.assembly.flatMap((item) => (item.kind === "static" && !item.mediaId ? [item.label] : []));
+  if (missing.length === 0) return null;
+  return (
+    <div className="rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm">
+      <p className="font-medium">O PDF sairá incompleto: falta o arquivo de {missing.length === 1 ? "uma página fixa" : `${missing.length} páginas fixas`}.</p>
+      <p className="text-muted-foreground">Envie o PDF na aba “Capas e ordem”: {missing.join(", ")}.</p>
     </div>
   );
 }

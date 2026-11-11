@@ -1,6 +1,7 @@
 import { beginOperation, endOperation } from "@venore/plugin-sdk/observability";
 import { hasAssemblyChanged, hasListContentChanged } from "../../shared/content-schema";
 import { findEditionById } from "../../shared/edition-store";
+import { contentMediaIds, deleteOrphanedMedia } from "../../shared/media-refs";
 import { failure, STATUS_LABELS } from "../../shared/results";
 import { updateEditionContent } from "./store";
 import type { SaveEditionCommand, SaveEditionResult } from "./types";
@@ -49,5 +50,9 @@ export async function saveEdition(command: SaveEditionCommand): Promise<SaveEdit
       failure("version_conflict", "Outra pessoa salvou esta lista enquanto você editava. Recarregue a página para ver a versão atual."),
     );
   }
+  // Capa/página fixa/logo trocados ou removidos: o arquivo antigo sai se nenhuma lista (nem revisão
+  // congelada) ainda o usa.
+  const stillUsed = new Set(contentMediaIds(command.content));
+  await deleteOrphanedMedia(contentMediaIds(current.content).filter((id) => !stillUsed.has(id)));
   return finish({ success: true, data: saved });
 }

@@ -12,3 +12,8 @@ export async function deleteSegmentRow(segmentId: string): Promise<boolean> {
   const rows = await db.delete(listasSegments).where(eq(listasSegments.id, segmentId)).returning({ id: listasSegments.id });
   return rows.length > 0;
 }
+
+export async function listSegmentEditionIds(segmentId: string): Promise<string[]> {
+  const rows = await db.select({ id: listasEditions.id }).from(listasEditions).where(eq(listasEditions.segmentId, segmentId));
+  return rows.map((row) => row.id);
+}

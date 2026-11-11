@@ -37,3 +37,8 @@ export async function markEditionPublished(command: {
     return toEditionRecord(row);
   });
 }
+
+// Revisões antigas guardavam o PDF que publicaram; ao trocá-lo, a referência some junto com o arquivo.
+export async function clearRevisionPdfReference(pdfMediaId: string): Promise<void> {
+  await db.update(listasRevisions).set({ pdfMediaId: null }).where(eq(listasRevisions.pdfMediaId, pdfMediaId));
+}

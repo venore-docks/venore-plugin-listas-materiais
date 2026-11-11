@@ -1,7 +1,8 @@
 import { beginOperation, endOperation } from "@venore/plugin-sdk/observability";
 import { findSegmentById } from "../../shared/edition-store";
+import { collectEditionMediaIds, deleteOrphanedMedia } from "../../shared/media-refs";
 import { failure } from "../../shared/results";
-import { countSegmentEditions, deleteSegmentRow } from "./store";
+import { countSegmentEditions, deleteSegmentRow, listSegmentEditionIds } from "./store";
 import type { DeleteSegmentCommand, DeleteSegmentResult } from "./types";
 
 export async function deleteSegment(command: DeleteSegmentCommand): Promise<DeleteSegmentResult> {
@@ -22,6 +23,8 @@ export async function deleteSegment(command: DeleteSegmentCommand): Promise<Dele
   }
 
   const editions = await countSegmentEditions(segment.id);
+  const mediaIds = await collectEditionMediaIds(await listSegmentEditionIds(segment.id));
   if (!(await deleteSegmentRow(segment.id))) return finish(failure("segment_not_found", "Segmento não encontrado."));
+  await deleteOrphanedMedia(mediaIds);
   return finish({ success: true, data: { name: segment.name, editions } });
 }

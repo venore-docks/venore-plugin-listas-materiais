@@ -1,9 +1,10 @@
 import { beginOperation, endOperation } from "@venore/plugin-sdk/observability";
 import { editionFileName, renderEditionPdf } from "../../shared/edition-pdf";
 import { findEditionById, findRevisionById, findSegmentById } from "../../shared/edition-store";
+import { deleteOrphanedMedia } from "../../shared/media-refs";
 import { uploadListasFile } from "../../shared/upload";
 import { failure } from "../../shared/results";
-import { markEditionPublished } from "./store";
+import { clearRevisionPdfReference, markEditionPublished } from "./store";
 import type { PublishEditionCommand, PublishEditionResult } from "./types";
 
 export async function publishEdition(command: PublishEditionCommand): Promise<PublishEditionResult> {
@@ -34,6 +35,7 @@ export async function publishEdition(command: PublishEditionCommand): Promise<Pu
     contentType: "application/pdf",
     data: Buffer.from(pdf.bytes),
     allowedMimeCategories: ["document"],
+    dedupe: false,
   });
   if (!uploaded.success) return finish(uploaded);
 
@@ -44,7 +46,14 @@ export async function publishEdition(command: PublishEditionCommand): Promise<Pu
     actorId: command.actorId,
   });
   if (!published) {
+    await deleteOrphanedMedia([uploaded.data.id]);
     return finish(failure("changed_while_publishing", "A lista foi alterada enquanto o PDF era gerado — ela precisa ser aprovada de novo."));
+  }
+  // Um PDF publicado por lista: o anterior (e a referência dele nas revisões velhas) sai.
+  const previousPdfId = edition.publishedPdfMediaId;
+  if (previousPdfId && previousPdfId !== uploaded.data.id) {
+    await clearRevisionPdfReference(previousPdfId);
+    await deleteOrphanedMedia([previousPdfId]);
   }
   return finish({ success: true, data: { edition: published, skipped: pdf.skipped } });
 }

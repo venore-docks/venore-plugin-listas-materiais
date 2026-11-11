@@ -5,7 +5,7 @@
 import { fileURLToPath } from "node:url";
 import { eq } from "drizzle-orm";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { applyMigrations, db, state } from "./mocks";
+import { applyMigrations, db, mediaState, state } from "./mocks";
 import type { EditionContent, EditionRecord } from "../../contracts/types";
 import { listasEditionEvents, listasRevisions, listasSegments } from "../../database/schema";
 import { createSegmentHandler } from "../../features/create-segment/handler";
@@ -16,6 +16,7 @@ import { listSegmentsHandler } from "../../features/list-segments/handler";
 import { publishEditionHandler } from "../../features/publish-edition/handler";
 import { reviewEditionHandler } from "../../features/review-edition/handler";
 import { saveEditionHandler } from "../../features/save-edition/handler";
+import { uploadEditionFileHandler } from "../../features/upload-edition-file/handler";
 import { startNextYearHandler } from "../../features/start-next-year/handler";
 import { submitEditionHandler } from "../../features/submit-edition/handler";
 import { LISTAS_PERMISSIONS as P } from "../../shared/permissions";
@@ -208,5 +209,61 @@ describe("listas de materiais — fluxo (PGlite)", () => {
     });
     expect(ok(await deleteSegmentHandler({ segmentId, confirmName: "Ensino Médio (3º ano)" }))).toEqual({ name: "Ensino Médio (3º ano)", editions: 2 });
     expect(ok(await listSegmentsHandler()).some((segment) => segment.id === segmentId)).toBe(false);
+  });
+});
+
+describe("listas de materiais — higiene da mídia (PGlite)", () => {
+  const pdf = (text: string) => Buffer.from(`%PDF-1.4 ${text}`);
+  const alive = (id: string) => mediaState.assets.get(id)?.deletedAt === null;
+
+  it("mesmo arquivo reaproveita o id; trocar a página fixa apaga a antiga; republicar apaga o PDF anterior", async () => {
+    asMarketing();
+    const created = ok(await createSegmentHandler({ name: "Higiene", year: 2030 }));
+    const upload = async (text: string) =>
+      ok(await uploadEditionFileHandler({ kind: "pdf", filename: "pagina.pdf", contentType: "application/pdf", data: pdf(text) })).id;
+
+    const first = await upload("folha-v1");
+    const withStatic = (mediaId: string | null) => ({
+      ...created.edition.content,
+      assembly: [...created.edition.content.assembly, { id: "s1", kind: "static" as const, label: "Folha de rosto", mediaId }],
+    });
+    let edition = ok(await saveEditionHandler({ editionId: created.edition.id, expectedVersion: created.edition.version, content: withStatic(first) }));
+
+    // Segundo upload do MESMO arquivo reutiliza o id (nada novo na mídia).
+    const uploadsBefore = state.uploads.length;
+    expect(await upload("folha-v1")).toBe(first);
+    expect(state.uploads).toHaveLength(uploadsBefore);
+
+    // Trocar a página fixa: o arquivo antigo some, o novo fica.
+    const second = await upload("folha-v2");
+    edition = ok(await saveEditionHandler({ editionId: edition.id, expectedVersion: edition.version, content: withStatic(second) }));
+    expect(alive(first)).toBe(false);
+    expect(alive(second)).toBe(true);
+
+    // Publicar duas vezes: só o último PDF sobrevive.
+    const publishFlow = async () => {
+      asCoordenacao();
+      ok(await submitEditionHandler({ editionId: edition.id, expectedVersion: edition.version }));
+      asDirecao();
+      const approved = ok(await reviewEditionHandler({ editionId: edition.id, expectedVersion: edition.version, decision: "approve" }));
+      asMarketing();
+      return ok(await publishEditionHandler({ editionId: approved.id })).edition;
+    };
+    edition = await publishFlow();
+    const pdfOne = edition.publishedPdfMediaId!;
+    asCoordenacao();
+    edition = ok(await saveEditionHandler({ editionId: edition.id, expectedVersion: edition.version, content: withItem(edition.content, "Item novo") }));
+    edition = await publishFlow();
+    expect(edition.publishedPdfMediaId).not.toBe(pdfOne);
+    expect(alive(pdfOne)).toBe(false);
+    expect(alive(edition.publishedPdfMediaId!)).toBe(true);
+    // A página fixa ainda é usada pela lista e pelas revisões: continua viva.
+    expect(alive(second)).toBe(true);
+
+    // Apagar a lista leva o PDF publicado e a página fixa junto.
+    as(marketing, [P.delete]);
+    ok(await deleteEditionHandler({ editionId: edition.id }));
+    expect(alive(second)).toBe(false);
+    expect(alive(edition.publishedPdfMediaId!)).toBe(false);
   });
 });
