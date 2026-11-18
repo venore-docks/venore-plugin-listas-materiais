@@ -11,6 +11,7 @@ As regras são as do core — não copie para cá, leia lá quando a tarefa toca
 - `.claude/rules/plugin-routes.md` do core: toda rota mora em `routes/route-table.ts`, nunca em `app/`.
 - `.claude/rules/css-tokens.md` do core: só tokens shadcn no admin. **Exceção**: `shared/render/style.ts` é o CSS do
   PDF (cópia fiel do gerador antigo) e tem cor/mm/fonte crus de propósito — mexer nele muda o PDF oficial.
+- `.claude/rules/ui-design.md` do core: telas que guiam — cor só para o que pede ação, uma ação principal por bloco, o secundário recolhido, um nível de caixa. Rode o checklist do fim da regra antes de entregar uma tela.
 - Schema: migration gerada com `drizzle-kit generate` (`drizzle.config.ts`), nunca editar `_journal.json` à mão.
 
 ## Pontos que já morderam
